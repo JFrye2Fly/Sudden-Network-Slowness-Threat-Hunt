@@ -13,7 +13,7 @@ All traffic originating from within the local network is by default allowed by a
 
 **The query below revealed that several devices from the 10.0.0.x/16 subnet were making Outbound requests to different IPs and different irregular ports. A screenshot is below the query:**
 
-**Query used:** <br>
+### **Query used:** <br>
 ***DeviceNetworkEvents 
 | where LocalIP startswith "10.0.0"
 | project Timestamp, DeviceName, LocalIP, RemoteIP, RemotePort, Protocol, InitiatingProcessFileName
@@ -28,7 +28,7 @@ All traffic originating from within the local network is by default allowed by a
 
 **I decided to look at what 10.0.0 IPs had the most outbound connections and what I saw was astounding. Some devices on this network had over 2000 outbound connections. This definitely smells like a port scan or a compromised device reaching back out to a C2 server.**
 
-**Query used:** <br>
+### **Query used:** <br>
 ***DeviceNetworkEvents 
 | where LocalIP startswith "10.0.0"
 | summarize ConnectionsPerLocalIp=count() by DeviceName, LocalIP
