@@ -40,18 +40,32 @@ All traffic originating from within the local network is by default allowed by a
 <br>
 
 <br><hr><br>
-## Step 3 — Check for any successful logon attempts after failed logon attempts
+## Step 3 — Look for suspicious Powershell Commands on "Jeffrey-test-v"
 
-***Query used:*** <br>
+I decided to look into the DeviceProcessEvents table specifically for one of the apparently compromised VMs: "jeffrey-test-v" by using the query below: 
 
-
+**| where DeviceName == "jeffreyf-test-v"
+| where ProcessCommandLine has_any ("powershell.exe", "pwsh.exe", "curl", "Invoke-WebRequest")
+| project Timestamp, ProcessCommandLine, AccountName
+| order by Timestamp desc**
 
 <br>
-<img width="1201" height="880" alt="No successful logon to the Windows VM after Brute Force attempt" src="https://github.com/user-attachments/assets/bd1b76cc-7213-4391-b9de-a3c01ba3b743" />
+
+## By projecting the ProcessCommandLine and the AccountName I could see clearly that the account name "fryeguy" ran a portscan through using the command line to go through powershell to do the port scan... 
+
+<br>
+<img width="1377" height="893" alt="Sudden Network Slowness #5" src="https://github.com/user-attachments/assets/b70ebd5b-34cd-4d36-8bb4-c229668a7be8" />
 <br>
 
 <br><hr><br>
 ## Conclusion
 
-In this Threat Hunt we tested our hypothesis that during the time this VM was exposed to the internet someone might have gained access through Brute Force Logins. Luckily no one gained access to the VM and we created a detection rule to alert us in the future. Super strong passwords that are not used on other accounts such be required to combat against Brute Force logons. 
+In this Threat Hunt we tested our hypothesis was that Port Scanning or large file downloads were happening on several devices on the 10.0.0/16 network which was causing a lot of network slowness. Our hypothesis about Port Scanning was correct as we literally found a file calledd "portscan.ps1."
 
+## Remediation steps:
+
+- Isolate the affected device in Microsoft Defender for Endpoint to stop further scanning or lateral movement.
+- Investigate the initiating process/user account (powershell.exe, nmap.exe, cmd.exe, etc.) and determine whether credentials were compromised.
+- Hunt for follow-on activity such as SMB/RDP access attempts, remote execution, scheduled tasks, or malware downloads.
+- Block or restrict the device’s internal network access using firewall rules, segmentation, or NAC controls.
+- Remediate persistence/malware, rotate compromised credentials, and harden the environment (limit PowerShell, enforce least privilege, tighten internal firewall rules).
