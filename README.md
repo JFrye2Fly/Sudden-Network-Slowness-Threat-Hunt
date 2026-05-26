@@ -11,17 +11,32 @@ All traffic originating from within the local network is by default allowed by a
 <br><hr><br>
 ## Step 1 — Search different network requests from devices within the **10.0.0.x/16** subnet <br>
 
-**The query below revealed that several devices from the 10.0.0.x/16 subnet were making Outbound requests to different IPs and different ports. A screenshot is below the query:**
+**The query below revealed that several devices from the 10.0.0.x/16 subnet were making Outbound requests to different IPs and different irregular ports. A screenshot is below the query:**
 
+**Query used:** <br>
+***DeviceNetworkEvents 
+| where LocalIP startswith "10.0.0"
+| project Timestamp, DeviceName, LocalIP, RemoteIP, RemotePort, Protocol, InitiatingProcessFileName
+| order by Timestamp desc***
+
+<br>
 <img width="1333" height="881" alt="Sudden Network Slowness #1" src="https://github.com/user-attachments/assets/983cbc0d-ff56-45ad-a77c-0b3d6ceebde2" />
 
 
 <br><hr><br>
-## Step 2 — Narrow down the search
+## Step 2 — Check which IPs had the most out outbound connections
+
+**I decided to look at what 10.0.0 IPs had the most outbound connections and what I saw was astounding. Some devices on this network had over 2000 outbound connections. This definitely smells like a port scan or a compromised device reaching back out to a C2 server.**
+
+**Query used:** <br>
+***DeviceNetworkEvents 
+| where LocalIP startswith "10.0.0"
+| summarize ConnectionsPerLocalIp=count() by DeviceName, LocalIP
+| order by ConnectionsPerLocalIp desc***
 
 
 <br>
-<img width="1406" height="921" alt="Bruite Force attempts in last 7 days by Account Name and number of attempts" src="https://github.com/user-attachments/assets/e6898db8-cf4c-4ae0-8757-be28c37cc541" />
+<img width="1388" height="884" alt="Sudden Network Slowness #2" src="https://github.com/user-attachments/assets/19f10295-c454-4733-8155-d66ac59b670f" />
 <br>
 
 <br><hr><br>
