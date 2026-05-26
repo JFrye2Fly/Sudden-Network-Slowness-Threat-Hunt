@@ -9,7 +9,7 @@
 All traffic originating from within the local network is by default allowed by all hosts. There is also unrestricted use of PowerShell and other applications in the environment. It’s possible someone is either downloading large files or doing some kind of port scanning against hosts in the local network.
 
 <br><hr><br>
-## Step 1 — Search different network requests from devices within the **10.0.0.x/16** subnet <br>
+## Step 1 — Search different network requests from devices within the **10.0.0./16** subnet <br>
 
 **The query below revealed that several devices from the 10.0.0.x/16 subnet were making Outbound requests to different IPs and different irregular ports. A screenshot is below the query:**
 
